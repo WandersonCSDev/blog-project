@@ -1,7 +1,37 @@
 const express = require("express");
 const helmet = require("helmet");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+//const { MongoClient, ServerApiVersion } = require("mongodb");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 
+const PORT = process.env.PORT || 5000;
+
+const app = express();
+
+dotenv.config();
+
+const mongoString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@coding-blog.ejls7vd.mongodb.net/blog?retryWrites=true&w=majority`;
+
+mongoose.connect(mongoString);
+
+mongoose.connection.on("error", function (error) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(error);
+  }
+});
+
+mongoose.connection.on("open", function () {
+  console.log("Connected to MongoDB database.");
+});
+
+app.use(helmet());
+
+app.listen(PORT, function () {
+  console.log(`Express app listening on port ${PORT}`);
+});
+
+//Outra opção para conectar com o driver nativo mongodb
+/**
 const uri =
   "mongodb+srv://mongo-root:X3por2d2@coding-blog.ejls7vd.mongodb.net/?retryWrites=true&w=majority";
 
@@ -28,13 +58,4 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-const PORT = process.env.PORT || 5000;
-
-const app = express();
-
-app.use(helmet());
-
-app.listen(PORT, function () {
-  console.log(`Express app listening on port ${PORT}`);
-});
+**/
